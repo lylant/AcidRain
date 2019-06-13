@@ -1,4 +1,5 @@
 from tkinter import Tk
+from time import sleep
 from data import acid_rain
 
 

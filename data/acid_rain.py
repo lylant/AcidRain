@@ -9,6 +9,7 @@ class GameEngine(object):
         self.blockNameList = []
         self.wordList = []
 
+
     def wordListGenerate(self):
         # set a directory for the resource file
         pathCurrentDir = os.path.dirname(__file__)  # current script directory
@@ -24,27 +25,20 @@ class GameEngine(object):
             self.wordList.append(word.strip())
                 # .strip() will remove any character with passed argument
                 # nothing is passed so whitespace will removed (default)
-        
-
-    def wordBlockCreate(self):
-        pass
-            
-
-    def wordBlockRemove(self, word):
-        pass
 
 
 class wordBlock(object):
     
     def __init__(self):
+        # initialize parameters
         self.name = ''
         self.alive = False
         self.coordinate = [0, 0]
     
+
     def blockCreate(self, GameEngine):
         # pass random name for this block and remove it from the word list
-        wordList = GameEngine.wordList  # bind a word list from the object of GameEngine
-        self.name = wordList.pop(random.randrange(len(wordList)))
+        self.name = (GameEngine.wordList).pop(random.randrange(len(GameEngine.wordList)))
 
         # put this block in play
         self.coordinate[0] = randint(0, 9)
@@ -54,6 +48,15 @@ class wordBlock(object):
         (GameEngine.blockNameList).append(self.name)
 
 
+    def blockRemove(self, GameEngine):
+        # remove from blockNameList and revive it in wordList
+        (GameEngine.wordList).append(self.name)
+        (GameEngine.blockNameList).remove(self.name)
+
+        # reinitialize parameters
+        self.coordinate = [0, 0]
+        self.alive = False
+        self.name = ''
 
 
 test = GameEngine()

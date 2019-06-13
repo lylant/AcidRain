@@ -1,6 +1,7 @@
 from tkinter import Tk, Label, Button, Radiobutton, IntVar
 from time import sleep
 from data import acid_rain
+import os
 
 
 
@@ -41,17 +42,37 @@ class MainEngine(object):
 
     
     def difficultySelection(self):
-        
+        ## get option parameters from an external option file
+        # set a directory for the resource file
+        pathCurrentDir = os.path.dirname(__file__)  # current script directory
+        pathRelDir = "resource/options.txt"
+        pathAbsDir = os.path.join(pathCurrentDir, pathRelDir)
+        optionFile = open(pathAbsDir, encoding="utf-8")
+
+        optionDifficulty = [] # a list for difficulty parameters got from the option file
+
+        # find the difficulty count parameters and bind to optionDifficulty
+        # these will bind the important parameter only as integer by using slicing
+        for optionLine in optionFile.readlines():
+            if "DiffCountEasy" in optionLine:
+                optionDifficulty.append(int(optionLine[14:-1]))
+            elif "DiffCountNorm" in optionLine:
+                optionDifficulty.append(int(optionLine[14:-1]))
+            elif "DiffCountHard" in optionLine:
+                optionDifficulty.append(int(optionLine[14:-1]))        
+
+
         if self.radioVar.get() == 1:
-            self.diffCount = 80
+            self.diffCount = optionDifficulty[0]
 
         elif self.radioVar.get() == 2:
-            self.diffCount = 70
+            self.diffCount = optionDifficulty[1]
 
         elif self.radioVar.get() == 3:
-            self.diffCount = 60
+            self.diffCount = optionDifficulty[2]
 
         
+        print(self.diffCount)
         self.gameStart()
 
 

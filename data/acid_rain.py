@@ -8,7 +8,7 @@ class GameEngine(object):
         # initialize some engine variables
         self.blockNameList = []
         self.wordList = []
-        
+
 
     def wordListGenerate(self):
         # set a directory for the resource file

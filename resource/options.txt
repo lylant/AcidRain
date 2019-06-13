@@ -1,3 +1,5 @@
-easy 80
-norm 70
-hard 60
+DiffCountEasy 80
+DiffCountNorm 70
+DiffCountHard 60
+
+(end of the option file)

@@ -1,0 +1,3 @@
+easy 80
+norm 70
+hard 60

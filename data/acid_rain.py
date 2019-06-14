@@ -5,9 +5,10 @@ from random import randint
 class GameEngine(object):
 
     def __init__(self):
-        # initialize some engine variables
+        # initialize some engine variables and generate wordList
         self.blockNameList = []
         self.wordList = []
+        self.wordListGenerate()
 
 
     def wordListGenerate(self):
@@ -25,6 +26,9 @@ class GameEngine(object):
             self.wordList.append(word.strip())
                 # .strip() will remove any character with passed argument
                 # nothing is passed so whitespace will removed (default)
+        
+    def inputResponse(self, inputWord):
+        print(inputWord)
 
 
 class wordBlock(object):
@@ -59,10 +63,4 @@ class wordBlock(object):
         self.name = ''
 
 
-test = GameEngine()
-test.wordListGenerate()
-test2 = wordBlock()
-test2.blockCreate(test)
-print(test2.coordinate)
-print(test2.name)
-print(test.blockNameList)
+game = GameEngine()

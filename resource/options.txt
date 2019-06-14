@@ -1,5 +1,8 @@
-DiffCountEasy 80
-DiffCountNorm 70
-DiffCountHard 60
+DiffCountEasy: 4
+DiffCountNorm: 5
+DiffCountHard: 6
+DiffTimeEasy: 80
+DiffTimeNorm: 70
+DiffTimeHard: 60
 
 (end of the option file)

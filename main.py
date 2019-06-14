@@ -1,8 +1,7 @@
-from tkinter import Tk, Label, Button, Radiobutton, IntVar
+from tkinter import Tk, Entry, Label, Button, Radiobutton, IntVar
 from time import sleep
 from data import acid_rain
 import os
-
 
 
 class MainEngine(object):
@@ -16,26 +15,48 @@ class MainEngine(object):
 
         # initialize some engine variables
         self.radioVar = IntVar() # for difficulty option feature
-        self.diffCount = 80
+        self.diffCount = 4
+        self.diffTime = 80
+        self.gameStarted = False
+
+        # call the third phase of initialization
+        self.initSecond()
 
 
-    def gameInitialize(self):
-        ## Difficulty Selection
-        diffLabel = Label(self.root, text="Select the difficulty.")
+    # 2nd phase of initialization: create widgets
+    def initSecond(self):
+        ## initialize widgets for difficulty selection
+        self.diffLabel = Label(self.root, text="Select the difficulty.")
 
         # difficulty select options with radiobuttons
         # function difficultySelection will be called if the player hit the diffBtn
-        radioBtn1 = Radiobutton(text="Easy", variable=self.radioVar, value=1)
-        radioBtn2 = Radiobutton(text="Normal", variable=self.radioVar, value=2)
-        radioBtn3 = Radiobutton(text="Hard", variable=self.radioVar, value=3)
-        diffBtn = Button(self.root, text="Select", command=self.difficultySelection, width=5, height=1)
+        self.radioBtn1 = Radiobutton(text="Easy", variable=self.radioVar, value=1)
+        self.radioBtn2 = Radiobutton(text="Normal", variable=self.radioVar, value=2)
+        self.radioBtn3 = Radiobutton(text="Hard", variable=self.radioVar, value=3)
+        self.diffBtn = Button(self.root, text="Select", command=self.difficultySelection, width=5, height=1)
+        
+        ## initialize widgets for the game
+        self.labelScore = Label(self.root, text="Score: ")
+        self.labelLife = Label(self.root, text="Life: ")
+        self.labelLineTop = Label(self.root, text="- " * 68)
+        self.labelLineBot = Label(self.root, text="- " * 68)
+        self.inputEntry = Entry(self.root)
 
-        # packing up and show all widgets
-        diffLabel.pack()
-        radioBtn1.pack()
-        radioBtn2.pack()
-        radioBtn3.pack()
-        diffBtn.pack()
+        # inputResponse will be called if the player hit <Return> key
+        self.root.bind('<Return>', self.inputResponse)
+
+        # call the third phase of initialization
+        self.initThird()
+
+
+    # 3rd phase of initialization: difficulty selection
+    def initThird(self):
+        ## difficulty selection, showing all relevant widgets
+        self.diffLabel.pack()
+        self.radioBtn1.pack()
+        self.radioBtn2.pack()
+        self.radioBtn3.pack()
+        self.diffBtn.pack()
 
         # execute the game
         self.root.mainloop()
@@ -49,36 +70,72 @@ class MainEngine(object):
         pathAbsDir = os.path.join(pathCurrentDir, pathRelDir)
         optionFile = open(pathAbsDir, encoding="utf-8")
 
-        optionDifficulty = [] # a list for difficulty parameters got from the option file
+        # lists for difficulty parameters from the property
+        optionDiffCount = []
+        optionDiffTime = []
 
-        # find the difficulty count parameters and bind to optionDifficulty
+        # find the option parameters and bind to lists
         # these will bind the important parameter only as integer by using slicing
         for optionLine in optionFile.readlines():
-            if "DiffCountEasy" in optionLine:
-                optionDifficulty.append(int(optionLine[14:-1]))
-            elif "DiffCountNorm" in optionLine:
-                optionDifficulty.append(int(optionLine[14:-1]))
-            elif "DiffCountHard" in optionLine:
-                optionDifficulty.append(int(optionLine[14:-1]))        
+            if "DiffCountEasy:" in optionLine:
+                optionDiffCount.append(int(optionLine[15:-1]))
+            elif "DiffCountNorm:" in optionLine:
+                optionDiffCount.append(int(optionLine[15:-1]))
+            elif "DiffCountHard:" in optionLine:
+                optionDiffCount.append(int(optionLine[15:-1]))
+            elif "DiffTimeEasy:" in optionLine:
+                optionDiffTime.append(int(optionLine[14:-1]))
+            elif "DiffTimeNorm:" in optionLine:
+                optionDiffTime.append(int(optionLine[14:-1]))
+            elif "DiffTimeHard:" in optionLine:
+                optionDiffTime.append(int(optionLine[14:-1]))
 
 
         if self.radioVar.get() == 1:
-            self.diffCount = optionDifficulty[0]
+            self.diffCount = optionDiffCount[0]
+            self.diffTime = optionDiffTime[0]
 
         elif self.radioVar.get() == 2:
-            self.diffCount = optionDifficulty[1]
+            self.diffCount = optionDiffCount[1]
+            self.diffTime = optionDiffTime[1]
 
         elif self.radioVar.get() == 3:
-            self.diffCount = optionDifficulty[2]
+            self.diffCount = optionDiffCount[2]
+            self.diffTime = optionDiffTime[2]
 
-        
-        print(self.diffCount)
+
         self.gameStart()
 
 
     def gameStart(self):
+        # remove all widgets for difficulty selection
+        self.radioBtn1.destroy()
+        self.radioBtn2.destroy()
+        self.radioBtn3.destroy()
+        self.diffBtn.destroy()
+        self.diffLabel.destroy()
+
+        # initialize the game
+        self.gameStarted = True
+        self.labelScore.place(x=10, y=5)
+        self.labelLife.place(x=550, y=5)
+        self.labelLineTop.place(x=10, y=25)
+        self.labelLineBot.place(x=10, y=430)
+        self.inputEntry.place(x=240, y=450)
+        
+
+
+    def inputResponse(self, event):
+
+        if self.gameStarted == True:
+            print(self.inputEntry.get())
+
+        else:
+            pass
+
+
+    def inGame(self):
         pass
 
 
 test3 = MainEngine()
-test3.gameInitialize()

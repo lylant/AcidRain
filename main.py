@@ -1,5 +1,5 @@
-from tkinter import Tk, Entry, Label, Button, Radiobutton, IntVar, END
-from time import sleep
+from tkinter import Tk, Entry, Label, Button, Radiobutton, messagebox, IntVar, END
+from threading import Timer
 from data import acid_rain
 import os
 
@@ -68,7 +68,7 @@ class MainEngine(object):
         self.diffTime = self.optionDiffTime[0]      # default: easy
         self.statusGame = False
         self.statusScore = 0
-        self.statusLife = 20
+        self.statusLife = 10
         self.wordCreateLimit = 2
 
         # call the third phase of initialization
@@ -97,7 +97,7 @@ class MainEngine(object):
 
         # inputResponse will be called if the player hit <Return> key
         self.root.bind('<Return>', self.inputResponse)
-        self.root.bind('<7>', self.inputResponseTest)
+        self.root.bind('<Escape>', self.inputResponseEscape)
 
         # call the third phase of initialization
         self.initThird()
@@ -130,8 +130,6 @@ class MainEngine(object):
             self.diffTime = self.optionDiffTime[2]
 
         self.gameStart()    # difficulty selection is finished
-        print("diffCount:", self.diffCount)
-        print("diffTime:", self.diffTime)
 
 
     def gameStart(self):
@@ -150,6 +148,8 @@ class MainEngine(object):
         self.labelLineBot.place(x=self.optionWidgetCoordinate[6], y=self.optionWidgetCoordinate[7])
         self.inputEntry.place(x=self.optionWidgetCoordinate[8], y=self.optionWidgetCoordinate[9])
         
+        self.loopTimer = PerpetualTimer(self.diffTime/130, self.loopFunction, self.diffCount)
+        self.loopTimer.start()
 
 
     def inputResponse(self, event):
@@ -168,6 +168,7 @@ class MainEngine(object):
                         pass
                     else:
                         self.labelBlockList[i].configure(text=acid_rain.gameEngine.wordBlockList[i].name)
+                        self.labelBlockList[i].place_forget()
                         self.labelScore.configure(text=("Score: " + str(self.statusScore)))
 
             else:
@@ -177,14 +178,10 @@ class MainEngine(object):
             pass    # game is not started yet
 
 
-    def inputResponseTest(self, event):
+    def inputResponseEscape(self, event):
 
-            self.loopFunction(self.diffCount)
-
-
-
-    def inGame(self):
-        pass
+        self.loopTimer.stop() 
+        messagebox.showinfo("Game Over!", "You hit the escape key!")
 
 
     def loopFunction(self, diffCount):
@@ -203,6 +200,8 @@ class MainEngine(object):
                 else:
                     acid_rain.gameEngine.wordBlockList[i].blockCreate(acid_rain.gameEngine) # calling the blockCreate function
                     self.labelBlockList[i].configure(text=acid_rain.gameEngine.wordBlockList[i].name)   # pass the name of the new block to widget
+                    self.labelBlockList[i].place(x=10 + acid_rain.gameEngine.wordBlockList[i].coordinate[0]*60,
+                                                y=30 + acid_rain.gameEngine.wordBlockList[i].coordinate[1]*19)
                     break   # if we find one, escape the loop
         
 
@@ -220,12 +219,25 @@ class MainEngine(object):
                 if acid_rain.gameEngine.wordBlockList[i].coordinate[1] == 20:
                     acid_rain.gameEngine.wordBlockList[i].blockRemove(acid_rain.gameEngine)
                     self.labelBlockList[i].configure(text=acid_rain.gameEngine.wordBlockList[i].name)
+                    self.labelBlockList[i].place_forget()
                     self.statusLife -= 1
+
+                    # check the remaining life
+                    if self.statusLife != 0:
+                        pass
+                    else: # game over
+                        self.loopTimer.stop()
+                        messagebox.showinfo("Game Over!", f"Your Final Score is {self.statusScore}!")
+
 
                 else:
                     acid_rain.gameEngine.wordBlockList[i].coordinate[1] += 1    # adjust y-coordinate
-                    self.labelBlockList[i].place(x=10 + acid_rain.gameEngine.wordBlockList[i].coordinate[0]*60,
-                                                y=30 + acid_rain.gameEngine.wordBlockList[i].coordinate[1]*19)
+
+                    if acid_rain.gameEngine.wordBlockList[i].coordinate[1] != 0:    # check if the word is just created (to prevent 'blinking' bug)
+                        self.labelBlockList[i].place(x=10 + acid_rain.gameEngine.wordBlockList[i].coordinate[0]*60,
+                                                    y=30 + acid_rain.gameEngine.wordBlockList[i].coordinate[1]*19)
+                    else:
+                        pass
 
             else:
                 pass
@@ -234,6 +246,34 @@ class MainEngine(object):
         ## configure score and life
         self.labelScore.configure(text=("Score: " + str(self.statusScore)))
         self.labelLife.configure(text=("Life: " + str(self.statusLife)))
+
+
+
+class PerpetualTimer(object):
+    
+    def __init__(self, interval, function, *args):
+        self.thread = None
+        self.interval = interval
+        self.function = function
+        self.args = args
+        self.isRunning = False
+
+    
+    def _handleFunction(self):
+        self.isRunning = False
+        self.start()
+        self.function(*self.args)
+
+    def start(self):
+        if not self.isRunning:
+            self.thread = Timer(self.interval, self._handleFunction)
+            self.thread.start()
+            self.isRunning = True
+
+    def stop(self):
+            self.thread.cancel()
+            self.isRunning = False
+
 
 
 mainEngine = MainEngine()

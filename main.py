@@ -97,6 +97,7 @@ class MainEngine(object):
 
         # inputResponse will be called if the player hit <Return> key
         self.root.bind('<Return>', self.inputResponse)
+        self.root.bind('<7>', self.inputResponseTest)
 
         # call the third phase of initialization
         self.initThird()
@@ -154,18 +155,38 @@ class MainEngine(object):
     def inputResponse(self, event):
 
         if self.statusGame == True:
-            acid_rain.gameEngine.inputResponse(self.inputEntry.get()) # pass input word to the game engine
+
+            matchFound = acid_rain.gameEngine.inputResponse(self.diffCount, self.inputEntry.get()) # check the word
             self.inputEntry.delete(0, END)  # clear the text box
 
-            self.loopFunction(self.diffCount)
+            if matchFound == True:
+                self.statusScore += 1
+
+                # find current dead block object and configure the widgets to renew the field
+                for i in range(self.diffCount):
+                    if acid_rain.gameEngine.wordBlockList[i].alive == True:
+                        pass
+                    else:
+                        self.labelBlockList[i].configure(text=acid_rain.gameEngine.wordBlockList[i].name)
+                        self.labelScore.configure(text=("Score: " + str(self.statusScore)))
+
+            else:
+                pass
+
         else:
             pass    # game is not started yet
+
+
+    def inputResponseTest(self, event):
+
+            self.loopFunction(self.diffCount)
+
 
 
     def inGame(self):
         pass
 
-    
+
     def loopFunction(self, diffCount):
         ## deploy a new word block if we have not enough word blocks on the field
         # prevent the burst as using wordCreateLimit variable

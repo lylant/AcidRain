@@ -29,9 +29,31 @@ class GameEngine(object):
             self.wordList.append(word.strip())
                 # .strip() will remove any character with passed argument
                 # nothing is passed so whitespace will removed (default)
+
+
+    def inputResponse(self, diffCount, inputWord):
+
+        try:
+            matchFound = False  # default: not match
+
+            for i in range(diffCount): # is there match word with input word in the block name list?
+                
+                # if match found, call blockRemove function and return True
+                if inputWord == self.wordBlockList[i].name:
+                    self.wordBlockList[i].blockRemove(self)
+                    matchFound = True
+                else:
+                    pass
+            
+            # return the result
+            if matchFound == True:
+                return True
+            else:
+                return False
         
-    def inputResponse(self, inputWord):
-        pass
+        
+        except ValueError:  # in case the player hit <return> without any input word
+            return False
 
 
 class wordBlock(object):

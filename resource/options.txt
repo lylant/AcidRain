@@ -1,0 +1,26 @@
+DiffCountEasy: 6
+DiffCountNorm: 8
+DiffCountHard: 10
+
+DiffTimeEasy: 80
+DiffTimeNorm: 70
+DiffTimeHard: 60
+
+
+UILabelScoreX: 10
+UILabelScoreY: 5
+
+UILabelLifeX: 575
+UILabelLifeY: 5
+
+UILabelLineTopX: 10
+UILabelLineTopY: 25
+
+UILabelLineBotX: 10
+UILabelLineBotY: 430
+
+UIinputTxtBoxX: 240
+UIinputTxtBoxY: 450
+
+
+(end of the option file)

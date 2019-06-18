@@ -1,6 +1,6 @@
-DiffCountEasy: 4
-DiffCountNorm: 5
-DiffCountHard: 6
+DiffCountEasy: 6
+DiffCountNorm: 8
+DiffCountHard: 10
 
 DiffTimeEasy: 80
 DiffTimeNorm: 70

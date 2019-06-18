@@ -7,7 +7,10 @@ class GameEngine(object):
     def __init__(self):
         # initialize some engine variables and generate wordList
         self.blockNameList = []
+        self.wordBlockList = []
         self.wordList = []
+        self.wordBlockList = [wordBlock() for i in range(10)]
+
         self.wordListGenerate()
 
 
@@ -28,7 +31,7 @@ class GameEngine(object):
                 # nothing is passed so whitespace will removed (default)
         
     def inputResponse(self, inputWord):
-        print(inputWord)
+        pass
 
 
 class wordBlock(object):
@@ -63,4 +66,4 @@ class wordBlock(object):
         self.name = ''
 
 
-game = GameEngine()
+gameEngine = GameEngine()

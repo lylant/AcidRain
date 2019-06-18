@@ -68,7 +68,8 @@ class MainEngine(object):
         self.diffTime = self.optionDiffTime[0]      # default: easy
         self.statusGame = False
         self.statusScore = 0
-        self.statusLife = 10
+        self.statusLife = 20
+        self.wordCreateLimit = 2
 
         # call the third phase of initialization
         self.initSecond()
@@ -92,6 +93,7 @@ class MainEngine(object):
         self.labelLineTop = Label(self.root, text="- " * 68)
         self.labelLineBot = Label(self.root, text="- " * 68)
         self.inputEntry = Entry(self.root)
+        self.labelBlockList = [Label(self.root, text='') for i in range(self.optionDiffCount[2])]
 
         # inputResponse will be called if the player hit <Return> key
         self.root.bind('<Return>', self.inputResponse)
@@ -114,20 +116,21 @@ class MainEngine(object):
 
     
     def difficultySelection(self):
-        if self.radioVar.get() == 1:
+        if self.radioVar.get() == 1:    # Easy
             self.diffCount = self.optionDiffCount[0]
             self.diffTime = self.optionDiffTime[0]
 
-        elif self.radioVar.get() == 2:
+        elif self.radioVar.get() == 2:  # Normal
             self.diffCount = self.optionDiffCount[1]
             self.diffTime = self.optionDiffTime[1]
 
-        elif self.radioVar.get() == 3:
+        elif self.radioVar.get() == 3:  # Hard
             self.diffCount = self.optionDiffCount[2]
             self.diffTime = self.optionDiffTime[2]
 
-
-        self.gameStart()
+        self.gameStart()    # difficulty selection is finished
+        print("diffCount:", self.diffCount)
+        print("diffTime:", self.diffTime)
 
 
     def gameStart(self):
@@ -139,7 +142,7 @@ class MainEngine(object):
         self.diffLabel.destroy()
 
         # initialize the game
-        self.gameStarted = True
+        self.statusGame = True
         self.labelScore.place(x=self.optionWidgetCoordinate[0], y=self.optionWidgetCoordinate[1])
         self.labelLife.place(x=self.optionWidgetCoordinate[2], y=self.optionWidgetCoordinate[3])
         self.labelLineTop.place(x=self.optionWidgetCoordinate[4], y=self.optionWidgetCoordinate[5])
@@ -151,18 +154,65 @@ class MainEngine(object):
     def inputResponse(self, event):
 
         if self.statusGame == True:
-            acid_rain.game.inputResponse(self.inputEntry.get())
+            acid_rain.gameEngine.inputResponse(self.inputEntry.get()) # pass input word to the game engine
+            self.inputEntry.delete(0, END)  # clear the text box
 
-            # clear the text box
-            self.inputEntry.delete(0, END)
-
-
+            self.loopFunction(self.diffCount)
         else:
-            pass
+            pass    # game is not started yet
 
 
     def inGame(self):
         pass
 
+    
+    def loopFunction(self, diffCount):
+        ## deploy a new word block if we have not enough word blocks on the field
+        # prevent the burst as using wordCreateLimit variable
+        if len(acid_rain.gameEngine.blockNameList) < diffCount and self.wordCreateLimit == 2:
 
-test3 = MainEngine()
+            self.wordCreateLimit = 0    # set the limit variable
+
+            # find a dead block object and call the blockCreate function
+            for i in range(diffCount):
+
+                if acid_rain.gameEngine.wordBlockList[i].alive == True:
+                    pass
+
+                else:
+                    acid_rain.gameEngine.wordBlockList[i].blockCreate(acid_rain.gameEngine) # calling the blockCreate function
+                    self.labelBlockList[i].configure(text=acid_rain.gameEngine.wordBlockList[i].name)   # pass the name of the new block to widget
+                    break   # if we find one, escape the loop
+        
+
+        # after two loop, we allow to deploy a new block
+        if self.wordCreateLimit != 2:
+            self.wordCreateLimit += 1
+        
+
+        ## active block moves
+        for i in range(diffCount):
+
+            if acid_rain.gameEngine.wordBlockList[i].alive == True:
+
+                # if the player missed this block, call blockRemove function and subtract life
+                if acid_rain.gameEngine.wordBlockList[i].coordinate[1] == 20:
+                    acid_rain.gameEngine.wordBlockList[i].blockRemove(acid_rain.gameEngine)
+                    self.labelBlockList[i].configure(text=acid_rain.gameEngine.wordBlockList[i].name)
+                    self.statusLife -= 1
+
+                else:
+                    acid_rain.gameEngine.wordBlockList[i].coordinate[1] += 1    # adjust y-coordinate
+                    self.labelBlockList[i].place(x=10 + acid_rain.gameEngine.wordBlockList[i].coordinate[0]*60,
+                                                y=30 + acid_rain.gameEngine.wordBlockList[i].coordinate[1]*19)
+
+            else:
+                pass
+
+        
+        ## configure score and life
+        self.labelScore.configure(text=("Score: " + str(self.statusScore)))
+        self.labelLife.configure(text=("Life: " + str(self.statusLife)))
+
+
+mainEngine = MainEngine()

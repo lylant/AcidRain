@@ -10,6 +10,10 @@ This project aims to practice building a simple typing game using Python.
 * **Destroy the Rain:** Recently the laboratory researched a new CIWS which allows you to destroy the rain blocks. Each rain block contains a random English word, you can destroy the rain block by typing the word in it.
 
 
+## Demo Video Available
+* [Link](https://www.youtube.com/watch?v=zvuttC9lugk "Public Demo Video on YouTube")
+
+
 ## Main Tech-Stacks for the Project
 * Python
 
